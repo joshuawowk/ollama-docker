@@ -2,11 +2,11 @@ services:
   app:
     build: .
     ports:
-      - 8000:8000
+      - 8001:8000
       - 5678:5678
     volumes:
       - .:/code
-    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8001 --reload
     restart: always
     depends_on:
       - ollama
@@ -16,7 +16,7 @@ services:
       
   ollama:
     volumes:
-      - ./ollama/ollama:/root/.ollama
+      - /home/jwowk/docker/ollama/ollama:/root/.ollama
     container_name: ollama
     pull_policy: always
     tty: true
@@ -40,17 +40,17 @@ services:
     image: ghcr.io/open-webui/open-webui:main
     container_name: ollama-webui
     volumes:
-      - ./ollama/ollama-webui:/app/backend/data
+      - /home/jwowk/docker/ollama/ollama-webui:/app/backend/data
     depends_on:
       - ollama
     ports:
-      - 8080:8080
+      - 8002:8080
     environment: # https://docs.openwebui.com/getting-started/env-configuration#default_models
       - OLLAMA_BASE_URLS=http://host.docker.internal:7869 #comma separated ollama hosts
       - ENV=dev
       - WEBUI_AUTH=False
       - WEBUI_NAME=valiantlynx AI
-      - WEBUI_URL=http://localhost:8080
+      - WEBUI_URL=http://localhost:8002
       - WEBUI_SECRET_KEY=t0p-s3cr3t
     extra_hosts:
       - host.docker.internal:host-gateway
@@ -61,3 +61,69 @@ services:
 networks:
   ollama-docker:
     external: false
+
+# # 
+
+# services:
+#   app:
+#     build: .
+#     ports:
+#       - 8001:8000
+#       - 5678:5678
+#     volumes:
+#       - .:/code
+#     command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+#     restart: always
+#     depends_on:
+#       - ollama
+#       - ollama-webui
+#     networks:
+#       - ollama-docker
+      
+#   ollama:
+#     volumes:
+#       - /home/jwowk/docker/ollama/ollama:/root/.ollama
+#     container_name: ollama
+#     pull_policy: always
+#     tty: true
+#     restart: unless-stopped
+#     image: docker.io/ollama/ollama:latest
+#     ports:
+#       - 7869:11434
+#     environment:
+#       - OLLAMA_KEEP_ALIVE=24h
+#     networks:
+#       - ollama-docker
+#     deploy:
+#       resources:
+#         reservations:
+#           devices:
+#             - driver: nvidia
+#               count: all 
+#               capabilities: [gpu]
+
+#   ollama-webui:
+#     image: ghcr.io/open-webui/open-webui:main
+#     container_name: ollama-webui
+#     volumes:
+#       - /home/jwowk/docker/ollama/ollama-webui:/app/backend/data
+#     depends_on:
+#       - ollama
+#     ports:
+#       - 8002:8080
+#     environment: # https://docs.openwebui.com/getting-started/env-configuration#default_models
+#       - OLLAMA_BASE_URLS=http://host.docker.internal:7869 #comma separated ollama hosts
+#       - ENV=dev
+#       - WEBUI_AUTH=False
+#       - WEBUI_NAME=valiantlynx AI
+#       - WEBUI_URL=http://localhost:8080
+#       - WEBUI_SECRET_KEY=t0p-s3cr3t
+#     extra_hosts:
+#       - host.docker.internal:host-gateway
+#     restart: unless-stopped
+#     networks:
+#       - ollama-docker
+
+# networks:
+#   ollama-docker:
+#     external: false
