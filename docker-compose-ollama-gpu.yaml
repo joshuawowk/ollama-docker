@@ -50,8 +50,8 @@ services:
       - ENV=dev
       - WEBUI_AUTH=False
       - WEBUI_NAME=valiantlynx AI
-      - WEBUI_URL=http://localhost:8002
-      - WEBUI_SECRET_KEY=t0p-s3cr3t
+      - WEBUI_URL=http://192.168.0.160:8002
+      - WEBUI_SECRET_KEY=SOMETHINGbett4r
     extra_hosts:
       - host.docker.internal:host-gateway
     restart: unless-stopped
